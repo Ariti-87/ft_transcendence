@@ -5,18 +5,18 @@ IMAGES			=	$(shell docker images -q)
 CONTAINERS		=	$(shell docker ps -aq)
 VOLUMES			=	$(shell docker volume ls -q)
 NETWORKS		=	$(shell docker network ls -q)
-DATA_DIR		=	./data/PostgreSQL
+# DATA_DIR		=	./data/PostgreSQL
 
 all:
 	@echo "$(YELLOW)\n. . . Launching . . .\n$(RESET)"
-	@mkdir -p $(DATA_DIR)
+#	@mkdir -p $(DATA_DIR)
 	@docker compose -p $(PROJET_NAME) -f ./docker-compose.yml up -d
 	@echo "\n$(BOLD)$(GREEN)Launched [ ✔ ]\n$(RESET)"
 
 start:
 	@echo "$(YELLOW)\n. . . starting containers . . . \n$(RESET)";
 	@if [ -n "$$(docker ps -aq)" ]; then \
-		docker compose -f ./docker-compose.yml start; \
+		docker compose -p $(PROJET_NAME) -f ./docker-compose.yml start; \
 		echo "\n$(BOLD)$(GREEN)Containers started [ ✔ ]\n$(RESET)"; \
 	else \
 		echo "\n$(BOLD)$(RED)No Docker containers found.$(RESET)\n"; \
@@ -24,13 +24,13 @@ start:
 
 logs:
 	@echo "$(YELLOW)\n. . . Displaying logs . . . \n$(RESET)"
-	@docker compose -f ./docker-compose.yml logs -f
+	@docker compose -p $(PROJET_NAME) logs
 	@echo "\n$(BOLD)$(GREEN)Displayed logs [ ✔ ]\n$(RESET)"
 
 stop:
 	@echo "$(YELLOW)\n. . . stopping containers . . . \n$(RESET)";
 	@if [ -n "$$(docker ps -aq)" ]; then \
-		docker compose -f ./docker-compose.yml stop; \
+		docker compose -p $(PROJET_NAME) -f ./docker-compose.yml stop; \
 		echo "\n$(BOLD)$(GREEN)Containers stopped [ ✔ ]\n$(RESET)"; \
 	else \
 		echo "\n$(BOLD)$(RED)No Docker containers found.$(RESET)\n"; \
@@ -61,7 +61,7 @@ clean: stop down
 
 fclean: clean
 	@echo "$(YELLOW)\n. . . Performing full cleanup . . .\n$(RESET)"
-	@rm -rf $(DATA_DIR)
+#	@rm -rf $(DATA_DIR)
 	@docker system prune -a -f
 	@echo "\n$(BOLD)$(GREEN)Full cleanup completed [ ✔ ]\n$(RESET)"
 

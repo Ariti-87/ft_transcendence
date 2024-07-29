@@ -1,19 +1,11 @@
 services:
-#   db:
-#     image: postgres
-#     environment:
-#       POSTGRES_DB: postgreSQL
-#       POSTGRES_USER: arincon
-#       POSTGRES_PASSWORD: 123
-#     ports:
-#       - "5432:5432"
   db:
-    image: postgres
-    container_name: transcendence-postgres
+    image: postgres:latest
+    container_name: postgres
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
     networks:
       - ft_transcendence
     restart: unless-stopped
@@ -29,23 +21,13 @@ services:
       timeout: 5s
       retries: 5
 
-#   web:
-#     build: ./myWebSite
-#     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-#     volumes:
-#       - ./myWebSite:/app
-#     ports:
-#       - "8000:8000"
-#     depends_on:
-#       - db
   mywebsite:
-    build: ./myWebSite
-    container_name: transcendence-mywebsite
-    # command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-    command: ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
-    #command: gunicorn my_website.wsgi:application --bind 0.0.0.0:8000
+    build: ./mywebsite
+    container_name: django
+    # command: ["sh", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+    command: gunicorn mywebsite.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./myWebSite:/app
+      - ./mywebsite:/app
     ports:
       - "8000:8000"
     env_file:
@@ -58,13 +40,13 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: transcendence-nginx
+    container_name: nginx
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./myWebSite/static:/static
-      - ./myWebSite/media:/media
+      - ./mywebsite/static:/static
+      - ./mywebsite/media:/media
     ports:
-      - "8080:80"
+      - "8080:8080"
     depends_on:
       mywebsite:
         condition: service_started
@@ -77,7 +59,7 @@ services:
       retries: 3
 
 volumes:
-  postgres-data:
+  postgres_data:
 
 networks:
   ft_transcendence:

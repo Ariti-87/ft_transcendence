@@ -27,4 +27,6 @@
 
 # Password
 .env
-./virtualenv
+
+# Virtual Environment
+myVirtualEnv/
