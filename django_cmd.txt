@@ -18,3 +18,5 @@ python manage.py check
 # permet de creer les tables,a utiliser apres makemigrations pour mettre la db a jour
 # ne pas oublie de l ajouter a INSTALLED_APPS
 python manage.py migrate
+# admin website
+python manage.py createsuperuser

@@ -58,10 +58,6 @@ clean: stop down
 fclean: clean
 	@echo "$(YELLOW)\n. . . Performing full cleanup . . .\n$(RESET)"
 #	@rm -rf $(DATA_DIR)
-	@if [ -n "$(VOLUMES)" ]; then \
-		echo "Removing volumes..."; \
-		docker volume rm -f $(VOLUMES); \
-	fi
 	@docker system prune -a -f
 	@echo "\n$(BOLD)$(GREEN)Full cleanup completed [ ✔ ]\n$(RESET)"
 
