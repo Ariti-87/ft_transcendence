@@ -54,18 +54,18 @@ clean: stop down
 		echo "Removing images..."; \
 		docker rmi -f $(IMAGES); \
 	fi
-	@if [ -n "$(VOLUMES)" ]; then \
-		echo "Removing volumes..."; \
-		docker volume rm -f $(VOLUMES); \
-	fi
 
 fclean: clean
 	@echo "$(YELLOW)\n. . . Performing full cleanup . . .\n$(RESET)"
 #	@rm -rf $(DATA_DIR)
+	@if [ -n "$(VOLUMES)" ]; then \
+		echo "Removing volumes..."; \
+		docker volume rm -f $(VOLUMES); \
+	fi
 	@docker system prune -a -f
 	@echo "\n$(BOLD)$(GREEN)Full cleanup completed [ ✔ ]\n$(RESET)"
 
-re: down all
+re: clean all
 	@echo "$(YELLOW)\n. . . Restarting the project . . .\n$(RESET)"
 
 check_status:
