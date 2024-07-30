@@ -61,8 +61,8 @@ fclean: clean
 	@docker system prune -a -f
 	@echo "\n$(BOLD)$(GREEN)Full cleanup completed [ ✔ ]\n$(RESET)"
 
+
 re: clean all
-	@echo "$(YELLOW)\n. . . Restarting the project . . .\n$(RESET)"
 
 check_status:
 	@echo "\n$(YELLOW)docker ps -a $(RESET)" && docker ps -a

@@ -10,7 +10,7 @@ services:
       - ft_transcendence
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_NAME}
+      POSTGRES_NAME: ${POSTGRES_NAME}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
@@ -25,6 +25,8 @@ services:
     command: gunicorn mywebsite.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./mywebsite:/app
+      - ./mywebsite/static:/app/static
+      - ./mywebsite/media:/app/media
     ports:
       - "8000:8000"
     env_file:
