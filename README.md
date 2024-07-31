@@ -75,3 +75,74 @@ Replace `your_db_user`, `your_db_password`, `your_db_name`, and `your_db_host` w
 - Do not commit your `.env` file to version control systems like Git. Add `.env` to your `.gitignore` file to keep sensitive information secure.
 
 For more information on managing environment variables in Django, refer to the [Django documentation on settings](https://docs.djangoproject.com/en/stable/topics/settings/)
+
+
+## Useful Commands
+
+### Setting Up Your Virtual Environment
+
+```bash
+python -m venv DirectoryName
+source DirectoryName/bin/activate
+deactivate
+```
+
+### Instaliing Django
+
+```bash
+python -m pip install django
+python -m django --version
+```
+
+### Starting a New Django Project
+
+```bash
+django-admin startproject siteName
+```
+
+### Running the Development Server
+
+```bash
+cd siteName
+python manage.py runserver
+
+```
+
+### Creating a New Django App
+
+```bash
+python manage.py startapp appName
+```
+
+### Working with Migrations
+
+#### After Changing Models
+
+```bash
+python manage.py makemigrations appName
+```
+
+#### Viewing SQL for a Migration
+
+```bash
+python manage.py sqlmigrate appName 0001
+```
+
+#### Checking for Project Problems
+
+```bash
+python manage.py check
+```
+
+#### Applying Migrations
+
+```bash
+python manage.py migrate
+```
+
+#### Creating a Superuser for Admin Interface
+
+```bash
+python manage.py createsuperuser
+```
+
