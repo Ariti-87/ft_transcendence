@@ -1,34 +1,13 @@
 services:
-  db:
-    image: postgres:latest
-    container_name: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    expose:
-      - "5432"
-    networks:
-      - ft_transcendence
-    restart: unless-stopped
-    environment:
-      POSTGRES_NAME: ${POSTGRES_NAME}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   mywebsite:
     build: ./mywebsite
-    container_name: django
-    command: gunicorn mywebsite.wsgi:application --bind 0.0.0.0:8000
+    container_name: mywebsite
+    command: python manage.py runserver 0.0.0.0:8000
+    # command: gunicorn mywebsite.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./mywebsite:/app
-      - ./mywebsite/static:/app/static
-      - ./mywebsite/media:/app/media
+      - static_volume:/app/staticfiles
     ports:
-      - "8000:8000"
+      - 8000:8000
     env_file:
       - .env
     depends_on:
@@ -37,31 +16,44 @@ services:
     networks:
       - ft_transcendence
 
+  db:
+    image: postgres:16
+    container_name: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+    restart: unless-stopped
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ft_transcendence
+
   nginx:
-    image: nginx:latest
+    build: ./nginx
     container_name: nginx
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./mywebsite/static:/static
-      - ./mywebsite/media:/media
+      - static_volume:/staticfiles/
     ports:
-      - "8080:8080"
+      - 8080:8080
     depends_on:
       mywebsite:
         condition: service_started
-    networks:
-      - ft_transcendence
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - ft_transcendence
 
 volumes:
-  postgres_data:
+  db_data:
+  static_volume:
 
 networks:
   ft_transcendence:
     name: ft_transcendence
-
-

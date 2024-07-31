@@ -2,19 +2,28 @@
 
 ## Project Structure
 
-When you create a Django project with the `startproject` command, it generates the following structure:
-
-mysite/
-├── manage.py
-├── mysite/
-	├── __init__.py
-	├── settings.py
-	├── urls.py
-	├── asgi.py
-	├── wsgi.py
-
-
-Here is a brief explanation of each file and directory:
+```bash
+├── VirutalEnv/
+├── mywebsite
+│   ├── Dockerfile
+│   ├── entrypoint.sh
+│   ├── mywebsite
+│   │   ├── __init__.py
+│   │   ├── asgi.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── manage.py
+│   └── requirements.txt
+│── nginx
+│   ├── Dockerfile
+│   └── nginx.conf
+├── .env
+├── .gitignore
+├── docker-compose.yml
+├── Makefile
+└── README.md
+```
 
 - **Outer `mysite/` Directory**:
   - This is the container for your project. Its name does not matter to Django; you can rename it to anything you like.
@@ -44,11 +53,20 @@ Here is a brief explanation of each file and directory:
 
 To ensure that your Django project runs correctly, you need to set up a `.env` file with the appropriate environment variables. This file should be placed in the root directory of your project and should include the following variables:
 
+DEBUG=True
+SECRET_KEY= #look in settings.py
+DJANGO_ALLOWED_HOSTS=localhost "ipadress1" "ipadress2"...
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=your_db_name
+SQL_USER=your_db_user
+SQL_PASSWORD=your_db_password
+SQL_HOST=your_db_host
+SQL_PORT=5432
+DATABASE=postgres
+
+POSTGRES_DB=your_db_name
 POSTGRES_USER=your_db_user
 POSTGRES_PASSWORD=your_db_password
-POSTGRES_NAME=your_db_name
-POSTGRES_HOST=your_db_host
-POSTGRES_PORT=5432
 
 Replace `your_db_user`, `your_db_password`, `your_db_name`, and `your_db_host` with your actual database credentials and host information.
 
