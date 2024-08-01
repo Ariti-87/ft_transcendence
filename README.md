@@ -5,14 +5,25 @@
 ```bash
 ├── VirutalEnv/
 ├── mywebsite
-│   ├── Dockerfile
-│   ├── entrypoint.sh
+│   ├── frontend
+│   │   ├── migrations/
+│   │   ├── templates/
+│   │   │   └── frontend/
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── test.py
+│   │   ├── urls.py
+│   │   └── views.py
 │   ├── mywebsite
 │   │   ├── __init__.py
 │   │   ├── asgi.py
 │   │   ├── settings.py
 │   │   ├── urls.py
 │   │   └── wsgi.py
+│   ├── Dockerfile
+│   ├── entrypoint.sh
 │   ├── manage.py
 │   └── requirements.txt
 │── nginx
@@ -146,3 +157,8 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+python manage.py test appName
+
+python -m pip install coverage
+coverage run --source='.' manage.py test appName
+coverage report
