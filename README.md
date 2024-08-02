@@ -3,15 +3,24 @@
 ## Project Structure
 
 ```bash
-├── VirutalEnv/
 ├── mywebsite
 │   ├── frontend
 │   │   ├── migrations/
+│   │   ├── static/
+│   │   │   └── frontend/
+│   │   │       └── css/
+│   │   │       └── img/
+│   │   │       └── js/
+│   │   │       └── node_modules/
+│   │   │       └── sass/
+│   │   │       └── vidieo/
 │   │   ├── templates/
 │   │   │   └── frontend/
+│   │   │       └── index.html
 │   │   ├── __init__.py
 │   │   ├── admin.py
 │   │   ├── apps.py
+│   │   ├── forms.py
 │   │   ├── models.py
 │   │   ├── test.py
 │   │   ├── urls.py

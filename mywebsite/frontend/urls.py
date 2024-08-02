@@ -1,24 +1,10 @@
 from django.urls import path
-
 from . import views
 
-app_name = "frontend"
-# urlpatterns = [
-# 	# ex: /frontend/
-# 	path("", views.index, name="index"),
-# 	# ex: /frontend/5/
-# 	path("specifics/<int:question_id>/", views.detail, name="detail"),
-# 	# ex: /frontend/5/results/
-# 	path("<int:question_id>/results/", views.results, name="results"),
-# 	# ex: /frontend/5/vote/
-# 	path("<int:question_id>/vote/", views.vote, name="vote"),
-# ]
-
-#################### GENERICS VIEW / URLconf ####################
-
 urlpatterns = [
-	path("", views.IndexView.as_view(), name="index"),
-	path("<int:pk>/", views.DetailView.as_view(), name="detail"),
-	path("<int:pk>/results/", views.ResultsView.as_view(), name="results"),
-	path("<int:question_id>/vote/", views.vote, name="vote"),
+	path('', views.index, name='index'),
+	path('home', views.index, name='home'),
+	path('signup', views.signup_view, name='signup'),
+	path('login', views.login_view, name='login'),
+	path('debug', views.debug_static_path, name='debug'),
 ]

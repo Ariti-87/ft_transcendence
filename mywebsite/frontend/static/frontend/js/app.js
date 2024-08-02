@@ -4,6 +4,22 @@ document.addEventListener('DOMContentLoaded', function() {
 	const decreaseFontBtn = document.getElementById('decrease-font');
 	const rootElement = document.documentElement;
 	let currentFontSize = 100;
+	const CSRF_TOKEN = getCookie('csrftoken');
+
+	function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 
 	increaseFontBtn.addEventListener('click', function() {
 		if (currentFontSize < 150) {
@@ -27,14 +43,14 @@ document.addEventListener('DOMContentLoaded', function() {
 			<div class="container">
 				<div class="row g-4">
 					<div class="col-12 col-md-6 d-flex justify-content-center">
-						<img src="./img/pusheen_drink.png" alt="Pusheen driking a cola" description="hello" width="75%">
+						<img src="/static/frontend/img/pusheen_drink.png" alt="Pusheen driking a cola" description="hello" width="75%">
 					</div>
 					<div class="col-12 col-md-6 mt-4 d-flex align-items-center justify-content-center">
 						<video controls class="w-100 rounded-3 border border-5 border-primary">
-							<source src="./video/pusheen_the_cat_intro.mp4" type="video/mp4"/>
+							<source src="/static/frontend/video/pusheen_the_cat_intro.mp4" type="video/mp4"/>
 							<p>
 								Votre navigateur ne prend pas en charge les vidéos HTML5. Voici
-								<a href="myVideo.mp4">un lien pour télécharger la vidéo</a>.
+								<a href="/static/frontend/video/pusheen_the_cat_intro.mp4">un lien pour télécharger la vidéo</a>.
 							</p>
 						</video>
 					</div>
@@ -60,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
 						<button type="button" class="btn btn-info mt-3 rounded-3 bg-secondary">Play Now</button>
 					</div>
 					<div class="col-12 col-md-4">
-						<img src="./img/pusheen.gif" alt="pusheen playing with a racket" description="hello" class="rounded-3 w-100 border border-5 border-secondary">
+						<img src="/static/frontend/img/pusheen.gif" alt="pusheen playing with a racket" description="hello" class="rounded-3 w-100 border border-5 border-secondary">
 					</div>
 				</div>
 			</div>
@@ -77,7 +93,8 @@ document.addEventListener('DOMContentLoaded', function() {
 						<div class="card shadow">
 							<div class="card-body p-5">
 								<h3 class="card-title text-center mb-4 font-potta">Sign Up</h3>
-								<form method='POST'>
+								<form method='POST' action=/signup/">
+									<input type="hidden" name="csrfmiddlewaretoken" value="${CSRF_TOKEN}">
 									<div class="mb-3">
 										<label for="firstName" class="form-label">First Name</label>
 										<input type="text" class="form-control" id="firstName" required>
@@ -121,7 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
 						<div class="card shadow">
 							<div class="card-body p-5">
 								<h3 class="card-title text-center mb-4 font-potta">Login</h3>
-								<form class="font-roboto" method='POST'>
+								<form class="font-roboto" method='POST' action="{% url 'login' %}">
+									<input type="hidden" name="csrfmiddlewaretoken" value="${CSRF_TOKEN}">
 									<div class="mb-3">
 										<label for="email" class="form-label"></label>
 										<input type="email" class="form-control" id="email" placeholder="Email" aria-describedby="emailHelp" required>
