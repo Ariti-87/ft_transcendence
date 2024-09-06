@@ -18,6 +18,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-	path("", include("frontend.urls")),
     path('admin/', admin.site.urls),
+    path('', include('frontend.urls')),
+    path('pong/', include('pong.urls')),
+    path('invaders/', include('invaders.urls')),
+    path('auth/', include('authentification.urls')),
+    path('i18n/', include('django.conf.urls.i18n')),
 ]

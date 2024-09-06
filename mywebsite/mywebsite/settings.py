@@ -25,28 +25,55 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DEBUG') == 'True'
 
-# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ["127.0.0.1"]
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split()
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 INSTALLED_APPS = [
-    'frontend.apps.FrontendConfig',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'frontend',
+    'authentification',
+    'invaders',
+    'pong',
 ]
+
+ASGI_APPLICATION = 'mywebsite.asgi.application'
+
+# in production we would use redis for in-memory database
+CHANNEL_LAYERS={
+	'default':{
+		'BACKEND':'channels.layers.InMemoryChannelLayer'
+	}
+}
+
+# For production (using redis)
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [("127.0.0.1", 6380)],
+# 			# "hosts": [('redis://default:IUNiWfxeTzDbVdtFlSglIEVaokQaSOhi@redis.railway.internal:6379')]
+#         },
+#     },
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -61,6 +88,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # 'DIRS': [],
 		'DIRS': [os.path.join(BASE_DIR, 'templates')],
+		# 'DIRS': [BASE_DIR / 'frontend' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,28 +155,48 @@ USE_I18N = True
 
 USE_TZ = True
 
+from django.utils.translation import gettext_lazy as _
+LANGUAGES = [
+    ('en', _('English')),
+    ('fr', _('French')),
+    ('es', _('Spanish')),
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Directory where collectstatic will place the files
 # STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'frontend/static'),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Redirect after login
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+# # Redirect after login
+# LOGIN_REDIRECT_URL = 'home'
+# LOGOUT_REDIRECT_URL = 'home'
+
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8080',  # Nginx is serving the app here
+    'http://127.0.0.1:8080',  # Ensure this is included if you're using localhost
+    'http://paul-f4ar5s4:8080',# Add other domains as needed
+]
 
 # Custom user model
 AUTH_USER_MODEL = 'frontend.CustomUser'
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale'
+]

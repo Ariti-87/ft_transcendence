@@ -1,0 +1,28 @@
+{% load static %}
+<div class="flex-grow-1 d-flex flex-column">
+	<div class="container mt-5 pt-2">
+		<section class="py-md-5 mt-5">
+			<h2 class="text-center mb-4 font-potta">Leaderboard</h2>
+			<table class="table leaderboard-table">
+				<thead>
+					<tr>
+						<th>rank</th>
+						<th>Player</th>
+						<th>Score</th>
+						<th>Games</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for entry in frontend_customuser %}
+					<tr>
+						<td>{{ forloop.counter }}</td>
+						<td>{{ entry.display_name }}</td>
+						<td>{{ entry.victories }}</td>
+						<td>{{ entry.defeats }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</section>
+	</div>
+</div>

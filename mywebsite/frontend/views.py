@@ -1,28 +1,58 @@
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from .forms import CustomUserCreationForm
+from django.contrib.auth.decorators import login_required
 
 def index(request):
-	return render(request, 'frontend/index.html')
+	redirect('home')
 
-def signup_view(request):
-	if request.method == 'POST':
-		form = CustomUserCreationForm(request.POST)
-		if form.is_valid():
-			user = form.save()
-			login(request, user)
-			return redirect('index')
-	else:
-		form = CustomUserCreationForm()
-	return render(request, 'frontend/signup.html', {'form': form})
+def home(request):
+	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+		html = render_to_string('home.html', request=request)
+		return JsonResponse({'html': html})
+	return render(request, 'base.html')
 
-def login_view(request):
-	# Implémentez la logique de connexion ici
-	return render(request, 'frontend/login.html')
+def login(request):
+	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+		html = render_to_string('login.html', request=request)
+		return JsonResponse({'html': html})
+	return render(request, 'base.html')
 
-from django.http import HttpResponse
-from django.templatetags.static import static
-def debug_static_path(request):
-    # Construire le chemin complet pour l'image
-    image_path = static('img/pusheen_drink.png')
-    return HttpResponse(f'Full path: {image_path}')
+def signup(request):
+	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+		html = render_to_string('signup.html', request=request)
+		return JsonResponse({'html': html})
+	return render(request, 'base.html')
+
+@login_required
+def profile(request):
+	pending_requests = request.user.get_pending_friend_requests()
+	sent_requests = request.user.get_sent_friend_requests()
+	context = {
+		'pending_requests': pending_requests,
+		'sent_requests': sent_requests
+	}
+	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+		html = render_to_string('profile.html', context, request=request)
+		return JsonResponse({'html': html})
+	return render(request, 'base.html')
+
+@login_required
+def games(request):
+	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+		html = render_to_string('games.html', request=request)
+		return JsonResponse({'html': html})
+	return render(request, 'base.html')
+
+@login_required
+def leaderboard(request):
+	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+		html = render_to_string('leaderboard.html', request=request)
+		return JsonResponse({'html': html})
+	return render(request, 'base.html')
+
+def load_header(request):
+	if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+		html = render_to_string('header.html', request=request)
+		return JsonResponse({'html': html})
+	return render(request, 'base.html')
