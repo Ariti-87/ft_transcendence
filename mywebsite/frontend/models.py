@@ -33,7 +33,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_online = models.BooleanField(default=True)
-    preferred_language = models.CharField(max_length=10, choices=settings.LANGUAGES, default='en')
 
     victories = models.PositiveIntegerField(default=0)
     defeats = models.PositiveIntegerField(default=0)

@@ -33,7 +33,7 @@
 							<span class="d-md-none ms-1 fs-6">Increase font size</span>
 						</button>
 					</li>
-					<!-- <li class="nav-item dropdown ms-3 mb-4 mb-md-0">
+					<li class="nav-item dropdown ms-3 mb-4 mb-md-0">
 						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 							<img src="{% static 'img/global.png' %}" alt="Choose your language" width="24" height="24">
 							<span class="d-md-none ms-1 fs-6">Languages</span>
@@ -43,19 +43,7 @@
 							<li><a class="dropdown-item" href="#">French</a></li>
 							<li><a class="dropdown-item" href="#">Spanish</a></li>
 						</ul>
-					</li> -->
-					<li class="nav-item dropdown ms-3 mb-4 mb-md-0">
-						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							<img src="{% static 'img/global.png' %}" alt="Choose your language" width="24" height="24">
-							<span class="d-md-none ms-1 fs-6">Languages</span>
-						</a>
-						<ul class="dropdown-menu rounded-3 bg-secondary dropdown-menu-primary" aria-labelledby="navbarDropdown" data-set-language-url="{% url 'set_language' %}">
-							<li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
-							<li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">French</a></li>
-							<li><a class="dropdown-item" href="#" onclick="changeLanguage('es')">Spanish</a></li>
-						</ul>
 					</li>
-
 				</ul>
 				{% if user.is_authenticated %}
 				<div class="d-flex justify-content-center align-items-center">

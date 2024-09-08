@@ -22,27 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	// SPA - Single Page Application
 	const app = document.getElementById('app');
 
-	function changeLanguage(lang) {
-		const setLanguageUrl = document.querySelector('[data-set-language-url]').getAttribute('data-set-language-url');
-
-		fetch(setLanguageUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-				"X-CSRFToken": getCookie('csrftoken')
-			},
-			body: `language=${lang}&next=${window.location.pathname}`
-		})
-		.then(response => {
-			if (response.ok) {
-				// Reload or re-fetch necessary parts of the page dynamically
-				loadContent(window.location.pathname, false);
-			}
-		})
-		.catch(error => console.error('Error changing language:', error));
-	}
-
-
 	const loadResource = (url, type) => {
 		return new Promise((resolve, reject) => {
 			const element = document.createElement(type);
@@ -118,8 +97,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	const attachListeners = () => {
 		const links = [
 			{ id: 'home', url: '/home/' },
-			{ id: 'login', url: '/login/' },
-			{ id: 'signup', url: '/signup/' },
+			{ id: 'login-from-signup', url: '/login/' },
+			{ id: 'login-from-home', url: '/login/' },
+			{ id: 'signup-from-login', url: '/signup/' },
 			{ id: 'navbar-signup', url: '/signup/' },
 			{ id: 'navbar-login', url: '/login/' },
 			{ id: 'navbar-profile', url: '/profile/' },

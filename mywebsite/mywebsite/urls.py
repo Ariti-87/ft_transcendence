@@ -23,5 +23,4 @@ urlpatterns = [
     path('pong/', include('pong.urls')),
     path('invaders/', include('invaders.urls')),
     path('auth/', include('authentification.urls')),
-    path('i18n/', include('django.conf.urls.i18n')),
 ]
