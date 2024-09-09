@@ -32,6 +32,8 @@ def signin(request):
         login(request, user)
         user.is_online = True
         user.save(update_fields=['is_online'])
+        translation.activate(user.preferred_language)
+        request.session[translation.LANGUAGE_SESSION_KEY] = user.preferred_language
         return JsonResponse({"message": "You have successfully logged in."}, status=200)
     else:
         return JsonResponse({"error": "Invalid email or password."}, status=401)

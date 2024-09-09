@@ -1,0 +1,302 @@
+diff --git a/mywebsite/authentification/views.py b/mywebsite/authentification/views.py
+index 245618c..6ed75c3 100644
+--- a/mywebsite/authentification/views.py
++++ b/mywebsite/authentification/views.py
+@@ -32,8 +32,6 @@ def signin(request):
+         login(request, user)
+         user.is_online = True
+         user.save(update_fields=['is_online'])
+-        translation.activate(user.preferred_language)
+-        request.session[translation.LANGUAGE_SESSION_KEY] = user.preferred_language
+         return JsonResponse({"message": "You have successfully logged in."}, status=200)
+     else:
+         return JsonResponse({"error": "Invalid email or password."}, status=401)
+diff --git a/mywebsite/entrypoint.sh b/mywebsite/entrypoint.sh
+index 859d8f6..b7a6a66 100644
+--- a/mywebsite/entrypoint.sh
++++ b/mywebsite/entrypoint.sh
+@@ -1,6 +1,5 @@
+ #!/bin/bash
+
+ python manage.py migrate --noinput
+-python manage.py compilemessages
+ python manage.py collectstatic --noinput
+ exec "$@"
+ exec "$@"
+diff --git a/mywebsite/frontend/models.py b/mywebsite/frontend/models.py
+index 64a6009..0e477b8 100644
+--- a/mywebsite/frontend/models.py
++++ b/mywebsite/frontend/models.py
+@@ -33,7 +33,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
+     is_staff = models.BooleanField(default=False)
+     is_superuser = models.BooleanField(default=False)
+     is_online = models.BooleanField(default=True)
+-    preferred_language = models.CharField(max_length=10, choices=settings.LANGUAGES, default='en')
+
+     victories = models.PositiveIntegerField(default=0)
+     defeats = models.PositiveIntegerField(default=0)
+diff --git a/mywebsite/frontend/static/js/frontend.js b/mywebsite/frontend/static/js/frontend.js
+index d8b957b..307a97d 100644
+--- a/mywebsite/frontend/static/js/frontend.js
++++ b/mywebsite/frontend/static/js/frontend.js
+@@ -22,27 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
+        // SPA - Single Page Application
+        const app = document.getElementById('app');
+
+-       function changeLanguage(lang) {
+        const app = document.getElementById('app');
+
+-       function changeLanguage(lang) {
+-               const setLanguageUrl = document.querySelector('[data-set-language-url]').getAttribute('data-set-language-url');
+-
+-               fetch(setLanguageUrl, {
+-                       method: "POST",
+-                       headers: {
+-                               "Content-Type": "application/x-www-form-urlencoded",
+-                               "X-CSRFToken": getCookie('csrftoken')
+-                       },
+-                       body: `language=${lang}&next=${window.location.pathname}`
+-               })
+-               .then(response => {
+-                       if (response.ok) {
+-                               // Reload or re-fetch necessary parts of the page dynamically
+-                               loadContent(window.location.pathname, false);
+-                       }
+-               })
+-               .catch(error => console.error('Error changing language:', error));
+-       }
+-
+-
+        const loadResource = (url, type) => {
+                return new Promise((resolve, reject) => {
+                        const element = document.createElement(type);
+@@ -118,8 +97,9 @@ document.addEventListener("DOMContentLoaded", () => {
+        const attachListeners = () => {
+                const links = [
+                        { id: 'home', url: '/home/' },
+-                       { id: 'login', url: '/login/' },
+-                       { id: 'signup', url: '/signup/' },
++                       { id: 'login-from-signup', url: '/login/' },
++                       { id: 'login-from-home', url: '/login/' },
++                       { id: 'signup-from-login', url: '/signup/' },
+                        { id: 'navbar-signup', url: '/signup/' },
+                        { id: 'navbar-login', url: '/login/' },
+                        { id: 'navbar-profile', url: '/profile/' },
+diff --git a/mywebsite/frontend/templates/base.html b/mywebsite/frontend/templates/base.html
+index 334a6f9..ea26ffb 100644
+--- a/mywebsite/frontend/templates/base.html
++++ b/mywebsite/frontend/templates/base.html
+@@ -1,6 +1,6 @@
+ {% load static %}
+ <!DOCTYPE html>
+-<html lang='{{ LANGUAGE_CODE }}'>
++<html lang="fr">
+ <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+diff --git a/mywebsite/frontend/templates/header.html b/mywebsite/frontend/templates/header.html
+index ed3270e..120c1f4 100644
+--- a/mywebsite/frontend/templates/header.html
++++ b/mywebsite/frontend/templates/header.html
+@@ -33,7 +33,7 @@
+                                                        <span class="d-md-none ms-1 fs-6">Increase font size</span>
+                                                </button>
+                                        </li>
+-                                       <!-- <li class="nav-item dropdown ms-3 mb-4 mb-md-0">
++                                       <li class="nav-item dropdown ms-3 mb-4 mb-md-0">
+                                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded
+="false">
+                                                        <img src="{% static 'img/global.png' %}" alt="Choose your language" width="24" height="24">
+                                                        <span class="d-md-none ms-1 fs-6">Languages</span>
+@@ -43,19 +43,7 @@
+                                                        <li><a class="dropdown-item" href="#">French</a></li>
+                                                        <li><a class="dropdown-item" href="#">Spanish</a></li>
+                                                </ul>
+-                                       </li> -->
+-                                       <li class="nav-item dropdown ms-3 mb-4 mb-md-0">
+-                                               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded
+="false">
+-                                                       <img src="{% static 'img/global.png' %}" alt="Choose your language" width="24" height="24">
+-                                                       <span class="d-md-none ms-1 fs-6">Languages</span>
+-                                               </a>
+-                                               <ul class="dropdown-menu rounded-3 bg-secondary dropdown-menu-primary" aria-labelledby="navbarDropdown" data-set-langu
+age-url="{% url 'set_language' %}">
+-                                                       <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')">English</a></li>
+-                                                       <li><a class="dropdown-item" href="#" onclick="changeLanguage('fr')">French</a></li>
+-                                                       <li><a class="dropdown-item" href="#" onclick="changeLanguage('es')">Spanish</a></li>
+-                                               </ul>
+                                        </li>
+-
+                                </ul>
+                                {% if user.is_authenticated %}
+                                <div class="d-flex justify-content-center align-items-center">
+diff --git a/mywebsite/frontend/templates/home.html b/mywebsite/frontend/templates/home.html
+index 2b7df71..cf372a8 100644
+--- a/mywebsite/frontend/templates/home.html
++++ b/mywebsite/frontend/templates/home.html
+@@ -1,5 +1,4 @@
+ {% load static %}
+-{% load i18n %}
+ <section class="py-md-5 mt-5">
+        <div class="container">
+                <div class="row g-4">
+@@ -10,8 +9,8 @@
+index 2b7df71..cf372a8 100644
+--- a/mywebsite/frontend/templates/home.html
++++ b/mywebsite/frontend/templates/home.html
+@@ -1,5 +1,4 @@
+ {% load static %}
+-{% load i18n %}
+ <section class="py-md-5 mt-5">
+        <div class="container">
+                <div class="row g-4">
+@@ -10,8 +9,8 @@
+                                <video controls class="w-100 rounded-3 border border-5 border-primary">
+                                        <source src="{% static 'video/pusheen_the_cat_intro.mp4' %}" type="video/mp4"/>
+                                        <p>
+-                                               Your browser does not support HTML5 videos.
+-                                               <a href="{% static 'video/pusheen_the_cat_intro.mp4' %}">Download the video here</a>.
++                                               Votre navigateur ne prend pas en charge les vidéos HTML5. Voici
++                                               <a href="{% static 'video/pusheen_the_cat_intro.mp4' %}">un lien pour télécharger la vidéo</a>.
+                                        </p>
+                                </video>
+                        </div>
+@@ -20,9 +19,9 @@
+ </section>
+ <section class="py-md-5 mt-4">
+        <div class="container">
+-               <p>{% trans "Pong is a table tennis–themed twitch arcade sports video game, featuring simple two-dimensional graphics, manufactured by Atari and origi
+nally released
++               <p>Pong is a table tennis–themed twitch arcade sports video game, featuring simple two-dimensional graphics, manufactured by Atari and originally rele
+ased
+                        on 29 November 1972. It was one of the earliest arcade video games; it was created by Allan Alcorn as a training exercise assigned to him
+-                       by Atari co-founder Nolan Bushnell, but Bushnell and Atari co-founder Ted Dabney were surprised by the quality of Alcorn's work and decided to
+ manufacture the game." %}</p>
++                       by Atari co-founder Nolan Bushnell, but Bushnell and Atari co-founder Ted Dabney were surprised by the quality of Alcorn's work and decided to
+ manufacture the game.</p>
+                <p>Pong was the first commercially successful video game, and it helped to establish the video game industry along with the Magnavox Odyssey.
+                        Soon after its release, several companies began producing games that closely mimicked its gameplay.</p>
+        </div>
+@@ -32,7 +31,11 @@
+@@ -32,7 +31,11 @@
+                <div class="row g-4 justify-content-evenly mx-2">
+                        <div class="col-12 col-md-4 bg-primary d-flex flex-column align-items-center justify-content-center rounded-3 p-4">
+                                <h1 class="fw-bold text-center">Pusheen Arcade</h1>
++                               {% if user.is_authenticated %}
+                                <button type="button" class="btn btn-info mt-3 rounded-3 bg-secondary" id="games">Play Now</button>
++                               {% else %}
++                               <button type="button" class="btn btn-info mt-3 rounded-3 bg-secondary" id="login-from-home">login to play</button>
++                               {% endif %}
+                        </div>
+                        <div class="col-12 col-md-4 d-flex align-items-center">
+                                <img src="{% static 'img/pusheen.gif' %}" alt="pusheen playing with a racket" class="rounded-3 w-100 border border-5 border-secondary"
+>
+diff --git a/mywebsite/frontend/templates/login.html b/mywebsite/frontend/templates/login.html
+index ba38e64..9dd3be7 100644
+--- a/mywebsite/frontend/templates/login.html
++++ b/mywebsite/frontend/templates/login.html
+@@ -1,8 +1,9 @@
+--- a/mywebsite/frontend/templates/login.html
++++ b/mywebsite/frontend/templates/login.html
+@@ -1,8 +1,9 @@
+ {% load static %}
+ <section class="d-flex align-items-center justify-content-center">
+        <div class="container mt-5">
+-               <div class="row justify-content-center">
+-                       <div class="col-12 col-md-6 col-lg-4">
++               <div class="row d-flex justify-content-center align-items-center">
++                       <!-- Login Form Section -->
++                       <div class="col-12 col-md-5 col-lg-4 d-flex flex-column align-items-center mb-4 mb-md-0">
+                                <div class="card shadow">
+                                        <div class="card-body p-5">
+                                                <h3 class="card-title text-center mb-4 font-potta">Login</h3>
+@@ -20,11 +21,13 @@
+                                                                <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                                                                <label class="form-check-label" for="rememberMe">Remember me</label>
+                                                        </div>
+-                                                       <button type="submit" class="btn btn-primary w-100">Login</button>
+-                                                       <div class="text-center mt-3">
+-                                                               <a href="#" class="text-decoration-none">Forgot password?</a>
+-                                                       </div>
++                                                       <button type="submit" class="btn btn-outline-primary w-100">Login</button>
+                                                </form>
++                                               <!-- API Login Button -->
++                                               <div class="text-center mt-3">
++                                                       <p>Or login with:</p>
++                                                       <a href="" class="btn btn-outline-secondary w-100">Login with <img src="{% static 'img/42_Logo.png' %}" alt="s
+chool 42 icon" width="24" height="24"></a>
++                                               </div>
+                                        </div>
+                                </div>
+                                <div class="text-center mt-3 font-roboto">
+@@ -34,4 +37,3 @@
+                </div>
+        </div>
+ </section>
+-
+diff --git a/mywebsite/frontend/templates/signup.html b/mywebsite/frontend/templates/signup.html
+index ea42479..8c527dc 100644
+--- a/mywebsite/frontend/templates/signup.html
++++ b/mywebsite/frontend/templates/signup.html
+@@ -41,7 +41,7 @@
+                                        </div>
+                                </div>
+                                <div class="text-center mt-3">
+-                                       <p>Already have an account? <a href="#" class="text-decoration-none" id="login">Login</a> </p>
++                                       <p>Already have an account? <a href="#" class="text-decoration-none" id="login-from-signup">Login</a> </p>
+                                </div>
+                        </div>
+                </div>
+diff --git a/mywebsite/mywebsite/settings.py b/mywebsite/mywebsite/settings.py
+index 6e24ae5..28b2680 100644
+--- a/mywebsite/mywebsite/settings.py
++++ b/mywebsite/mywebsite/settings.py
+@@ -73,7 +73,6 @@ CHANNEL_LAYERS={
+ MIDDLEWARE = [
+     'django.middleware.security.SecurityMiddleware',
+     'django.contrib.sessions.middleware.SessionMiddleware',
+ MIDDLEWARE = [
+ MIDDLEWARE = [
+     'django.middleware.security.SecurityMiddleware',
+     'django.contrib.sessions.middleware.SessionMiddleware',
+-    'django.middleware.locale.LocaleMiddleware',
+     'django.middleware.common.CommonMiddleware',
+     'django.middleware.csrf.CsrfViewMiddleware',
+ MIDDLEWARE = [
+     'django.middleware.security.SecurityMiddleware',
+     'django.contrib.sessions.middleware.SessionMiddleware',
+-    'django.middleware.locale.LocaleMiddleware',
+     'django.middleware.common.CommonMiddleware',
+     'django.middleware.csrf.CsrfViewMiddleware',
+     'django.contrib.auth.middleware.AuthenticationMiddleware',
+@@ -155,12 +154,6 @@ USE_I18N = True
+
+ USE_TZ = True
+
+-from django.utils.translation import gettext_lazy as _
+-LANGUAGES = [
+-    ('en', _('English')),
+-    ('fr', _('French')),
+-    ('es', _('Spanish')),
+-]
+
+ # Static files (CSS, JavaScript, Images)
+ # https://docs.djangoproject.com/en/5.0/howto/static-files/
+@@ -196,7 +189,3 @@ CSRF_TRUSTED_ORIGINS = [
+
+ # Custom user model
+ AUTH_USER_MODEL = 'frontend.CustomUser'
+-
+-LOCALE_PATHS = [
+-    BASE_DIR / 'locale'
+-]
+diff --git a/mywebsite/mywebsite/urls.py b/mywebsite/mywebsite/urls.py
+index 9df465c..313624c 100644
+--- a/mywebsite/mywebsite/urls.py
++++ b/mywebsite/mywebsite/urls.py
+@@ -23,5 +23,4 @@ urlpatterns = [
+     path('pong/', include('pong.urls')),
+     path('invaders/', include('invaders.urls')),
+     path('auth/', include('authentification.urls')),
+-    path('i18n/', include('django.conf.urls.i18n')),
+ ]

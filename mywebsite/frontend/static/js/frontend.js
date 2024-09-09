@@ -19,6 +19,27 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	});
 
+	// Language
+	function changeLanguage(lang) {
+			const setLanguageUrl = document.querySelector('[data-set-language-url]').getAttribute('data-set-language-url');
+
+			fetch(setLanguageUrl, {
+					method: "POST",
+					headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+							"X-CSRFToken": getCookie('csrftoken')
+					},
+					body: `language=${lang}&next=${window.location.pathname}`
+			})
+			.then(response => {
+					if (response.ok) {
+							// Reload or re-fetch necessary parts of the page dynamically
+							loadContent(window.location.pathname, false);
+					}
+			})
+			.catch(error => console.error('Error changing language:', error));
+	}
+
 	// SPA - Single Page Application
 	const app = document.getElementById('app');
 
@@ -209,11 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		return cookieValue;
 	}
 
-	// const getCookie = (name) => {
-	//     const cookies = document.cookie.split(';').map(cookie => cookie.trim());
-	//     const match = cookies.find(cookie => cookie.startsWith(`${name}=`));
-	//     return match ? decodeURIComponent(match.split('=')[1]) : null;
-	// };
 
 	window.addEventListener('popstate', () => loadContent(window.location.pathname, false));
 	loadContent(window.location.pathname, false);
